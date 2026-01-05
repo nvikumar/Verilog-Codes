@@ -19,7 +19,7 @@ module top_module(
 	// figure out what circuit to produce. (In contrast, a Verilog simulator will execute the loop sequentially
 	// during simulation.)
 	
-    parameter N = 8;
+	parameter N = $bits(in);		// $bits() is a system function that return the length/ number of bits in a signal.
     always @(*) begin	
         for (int i=0; i<N; i++)	// int is a SystemVerilog type. Use integer for pure Verilog.
             out[(N-1)-i] = in[i];
@@ -34,15 +34,19 @@ module top_module(
 	// In the example below, the generate-for loop first creates 8 assign statements at compile time, which is then
 	// synthesized.
 	// Note that because of its intended usage (generating code at compile time), there are some restrictions
-	// on how you use them. Examples: 1. Quartus requires a generate-for loop to have a named begin-end block
-	// attached (in this example, named "my_block_name"). 2. Inside the loop body, genvars are read only.
+	// on how you use them. Examples: 
+	// 1. Quartus requires a generate-for loop to have a named begin-end block attached (in this example, named "block_name"). 
+	// 2. Inside the loop body, genvars are read only.
+	
 	/*
-	generate
-		genvar i;
-		for (i=0; i<8; i = i+1) begin: my_block_name
-			assign out[i] = in[8-i-1];
-		end
-	endgenerate
+	parameter N = $bits(in);
+    // genvar i; (inside or outside generate block, both are correct)
+    generate 
+        genvar i;
+        for (i = 0; i < N; i ++) begin: block_name
+            assign out[i] = in[(N-1)-i];
+        end
+    endgenerate	
 	*/
 
 endmodule
